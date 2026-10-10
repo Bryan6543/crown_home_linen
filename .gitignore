@@ -32,6 +32,11 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
+
+# local catalog written by the file store
+/data/store.json
+/public/uploads
 
 # vercel
 .vercel
