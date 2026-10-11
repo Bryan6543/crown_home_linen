@@ -102,8 +102,8 @@ export function Header({
           >
             <Menu size={20} />
           </button>
-          <div className="hidden md:block">
-            <Mark name={storeName} />
+          <div className="hidden scale-150 md:block">
+            <Mark name={storeName} logoUrl={logoUrl} />{" "}
           </div>
           <nav className="hidden items-center justify-center gap-6 md:flex">
             {nav.map((item) => (
