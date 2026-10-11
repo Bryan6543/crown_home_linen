@@ -504,6 +504,7 @@ products[13].variants = makeVariants(products[13].id, products[13].sku, products
 
 const settings: Settings = {
   storeName: "CrownHomeLinen",
+  logoUrl: "",
   tagline: "Towels, pillows, and bed linen. Ordered by message.",
   announcement: "Orders are confirmed on WhatsApp — we answer by hand.",
   announcementEnabled: true,

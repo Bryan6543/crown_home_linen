@@ -13,12 +13,19 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata(): Promise<Metadata> {
   const snapshot = await getSnapshot();
   return {
-    title: { default: snapshot.settings.metaTitle, template: "%s — CrownHomeLinen" },
+    title: {
+      default: snapshot.settings.metaTitle,
+      template: "%s — CrownHomeLinen",
+    },
     description: snapshot.settings.metaDescription,
   };
 }
 
-export default async function StoreLayout({ children }: { children: React.ReactNode }) {
+export default async function StoreLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const snapshot = await getSnapshot();
   const products = activeProducts(snapshot).map((product) => ({
     title: product.title,
@@ -35,6 +42,7 @@ export default async function StoreLayout({ children }: { children: React.ReactN
       </Suspense>
       <Header
         storeName={snapshot.settings.storeName}
+        logoUrl={snapshot.settings.logoUrl}
         announcement={snapshot.settings.announcement}
         announcementEnabled={snapshot.settings.announcementEnabled}
         nav={navItems(snapshot, "header")}
@@ -44,7 +52,10 @@ export default async function StoreLayout({ children }: { children: React.ReactN
         <PageFade>{children}</PageFade>
       </main>
       {snapshot.settings.popupEnabled ? (
-        <NewsletterPopup title={snapshot.settings.popupTitle} body={snapshot.settings.popupBody} />
+        <NewsletterPopup
+          title={snapshot.settings.popupTitle}
+          body={snapshot.settings.popupBody}
+        />
       ) : null}
       <Footer
         storeName={snapshot.settings.storeName}

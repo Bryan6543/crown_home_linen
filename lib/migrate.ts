@@ -36,6 +36,7 @@ export function migrateSnapshot(input: StoreSnapshot): StoreSnapshot {
   const snapshot = input;
   snapshot.settings = { ...mailDefaults, ...snapshot.settings };
   snapshot.subscribers = snapshot.subscribers || [];
+  snapshot.settings.logoUrl = snapshot.settings.logoUrl || "";
   snapshot.campaigns = snapshot.campaigns || [];
   snapshot.deliveries = snapshot.deliveries || [];
   snapshot.templates = mergeTemplates(snapshot.templates);

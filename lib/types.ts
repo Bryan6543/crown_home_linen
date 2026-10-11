@@ -191,6 +191,7 @@ export type NavItem = {
 
 export type Settings = {
   storeName: string;
+  logoUrl: string;
   tagline: string;
   announcement: string;
   announcementEnabled: boolean;

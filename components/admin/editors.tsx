@@ -59,6 +59,46 @@ export function SettingsForm({ settings, mode }: { settings: Settings; mode: "fi
         <input type="checkbox" checked={draft.announcementEnabled} onChange={(event) => setDraft({ ...draft, announcementEnabled: event.target.checked })} />
         Show the announcement
       </label>
+
+      <label className="block text-sm">
+        Company logo
+        <div className="mt-2 flex items-center gap-4">
+          {draft.logoUrl ? (
+            <img src={draft.logoUrl} alt="Logo preview" className="h-12 w-auto max-w-[160px] object-contain border border-line bg-white p-1" />
+          ) : (
+            <span className="text-xs text-muted">No logo set</span>
+          )}
+          <label className="btn-line cursor-pointer">
+            Upload logo
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(event) => {
+                const file = event.target.files?.[0];
+                if (!file) return;
+                const body = new FormData();
+                body.set("file", file);
+                void uploadImageAction(body).then((result) => {
+                  if ("url" in result) setDraft({ ...draft, logoUrl: result.url });
+                  else setMessage(result.error);
+                });
+              }}
+            />
+          </label>
+          {draft.logoUrl ? (
+            <button
+              type="button"
+              className="text-xs uppercase tracking-wider text-muted hover:text-ink"
+              onClick={() => setDraft({ ...draft, logoUrl: "" })}
+            >
+              Remove
+            </button>
+          ) : null}
+        </div>
+        <p className="mt-1 text-xs text-muted">Recommended: transparent PNG or SVG, roughly 200–400 px wide. Saved with the rest of the settings.</p>
+      </label>
+
       {fields.map(([key, label]) => (
         <label key={key} className="block text-sm">{label}
           {key === "footerNote" || key === "metaDescription" || key === "whatsappGreeting" ? (
