@@ -62,18 +62,18 @@ export function NewsletterPopup({ title, body }: { title: string; body: string }
 
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-ink/30 p-4 sm:items-center" onClick={close}>
-      <div ref={card} className="w-full max-w-md border border-line bg-paper p-6 shadow-xl" onClick={(event) => event.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="letter-popup-title">
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-navy-deep/45 p-4 sm:items-center" onClick={close}>
+      <div ref={card} className="w-full max-w-md crown-frame ivory-ground p-8 text-navy shadow-xl" onClick={(event) => event.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="letter-popup-title">
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="eyebrow">The list</p>
-            <h2 id="letter-popup-title" className="mt-2 font-serif text-4xl">{title}</h2>
+            <h2 id="letter-popup-title" className="gold-text mt-2 font-serif text-4xl font-bold">{title}</h2>
           </div>
-          <button type="button" onClick={close} className="text-xs uppercase tracking-[0.16em]" aria-label="Close">
+          <button type="button" onClick={close} className="label text-[10px] text-brass" aria-label="Close">
             Close
           </button>
         </div>
-        <p className="mt-3 text-sm leading-6 text-muted">{body}</p>
+        <p className="mt-3 font-serif italic leading-6 text-muted">{body}</p>
         <div className="mt-5">
           <SubscribeForm source="popup" />
         </div>

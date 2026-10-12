@@ -21,13 +21,13 @@ export function ProductCard({ product, currency }: { product: Product; currency:
         ) : null}
       </div>
       <div className="mt-3 flex items-baseline justify-between gap-3">
-        <h3 className="text-[15px]">{product.title}</h3>
-        <p className="text-sm text-muted">
-          {price.compare ? <span className="mr-2 line-through">{formatMoney(price.compare, currency)}</span> : null}
+        <h3 className="font-serif text-[16px] text-navy">{product.title}</h3>
+        <p className="font-serif text-[15px] font-bold text-brass">
+          {price.compare ? <span className="mr-2 font-normal text-muted line-through">{formatMoney(price.compare, currency)}</span> : null}
           {formatMoney(price.price, currency)}
         </p>
       </div>
-      <p className="mt-1 text-xs uppercase tracking-[0.14em] text-muted">{product.material.split(",")[0]}</p>
+      <p className="label mt-1 text-[9.5px] text-muted">{product.material.split(",")[0]}</p>
     </Link>
   );
 }
@@ -67,13 +67,16 @@ function SectionBlock({ section, snapshot }: { section: Section; snapshot: Store
     return (
       <Reveal className="mx-auto max-w-6xl px-5 py-16 md:px-8">
         <p className="eyebrow">Collections</p>
-        <h2 className="mt-2 font-serif text-4xl md:text-5xl">{section.title}</h2>
+        <h2 className="gold-text mt-2 font-serif text-4xl font-bold md:text-5xl">{section.title}</h2>
         {section.subtitle ? <p className="mt-3 max-w-xl text-muted">{section.subtitle}</p> : null}
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {categories.map((category) => (
             <Link key={category.id} href={`/collections/${category.slug}`} className="group relative aspect-[3/4] overflow-hidden bg-sand" data-track={category.name} data-track-id={`collection-${category.slug}`}>
               <Image src={category.imageUrl} alt={category.imageAlt || category.name} fill className="object-cover transition duration-700 group-hover:scale-105" sizes="25vw" />
-              <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/70 to-transparent p-4 font-serif text-3xl text-white">{category.name}</span>
+              <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-navy-deep/85 via-navy/30 to-transparent p-5 font-serif text-3xl text-[#fbf8f1]">
+                <span className="crown-rule mb-3" aria-hidden />
+                {category.name}
+              </span>
             </Link>
           ))}
         </div>
@@ -87,10 +90,11 @@ function SectionBlock({ section, snapshot }: { section: Section; snapshot: Store
       <Reveal className="mx-auto max-w-6xl px-5 py-16 md:px-8">
         <div className="flex items-end justify-between gap-6">
           <div>
-            <h2 className="font-serif text-4xl md:text-5xl">{section.title}</h2>
-            {section.subtitle ? <p className="mt-3 text-muted">{section.subtitle}</p> : null}
+            <span className="crown-rule mb-4" aria-hidden />
+            <h2 className="gold-text font-serif text-4xl font-bold md:text-5xl">{section.title}</h2>
+            {section.subtitle ? <p className="mt-3 font-serif italic text-muted">{section.subtitle}</p> : null}
           </div>
-          <Link href="/shop" className="hidden text-xs uppercase tracking-[0.16em] md:inline" data-track="Shop all" data-track-id="shop-all">
+          <Link href="/shop" className="label hidden border-b border-gold pb-1 text-[10.5px] text-navy md:inline" data-track="Shop all" data-track-id="shop-all">
             Shop all
           </Link>
         </div>
@@ -107,7 +111,7 @@ function SectionBlock({ section, snapshot }: { section: Section; snapshot: Store
     const copy = (
       <div className="flex flex-col justify-center">
         {section.eyebrow ? <p className="eyebrow">{section.eyebrow}</p> : null}
-        <h2 className="mt-3 font-serif text-4xl md:text-5xl">{section.title}</h2>
+        <h2 className="gold-text mt-3 font-serif text-4xl font-bold md:text-5xl">{section.title}</h2>
         <div className="prose-house mt-5 max-w-md text-sm leading-7 text-muted">
           {paragraphs(section.body).map((paragraph) => (
             <p key={paragraph.slice(0, 24)}>{paragraph}</p>
@@ -121,7 +125,7 @@ function SectionBlock({ section, snapshot }: { section: Section; snapshot: Store
       </div>
     );
     const picture = (
-      <div className="relative min-h-[420px] bg-sand">
+      <div className="crown-frame relative min-h-[420px] bg-sand text-navy">
         <Image src={section.imageUrl} alt={section.imageAlt || section.title} fill className="object-cover" sizes="50vw" />
       </div>
     );
@@ -135,14 +139,15 @@ function SectionBlock({ section, snapshot }: { section: Section; snapshot: Store
 
   if (section.type === "values") {
     return (
-      <Reveal className="bg-ivory py-16">
+      <Reveal className="navy-ground on-navy py-16">
         <div className="mx-auto max-w-6xl px-5 md:px-8">
-          <h2 className="font-serif text-4xl">{section.title}</h2>
+          <span className="crown-rule mb-4" aria-hidden />
+          <h2 className="gold-text font-serif text-4xl font-bold">{section.title}</h2>
           <div className="mt-8 grid gap-8 md:grid-cols-4">
             {section.items.map((item) => (
               <div key={item.title}>
-                <h3 className="font-serif text-2xl">{item.title}</h3>
-                <p className="mt-2 text-sm leading-6 text-muted">{item.text}</p>
+                <h3 className="font-serif text-2xl text-[#fbf8f1]">{item.title}</h3>
+                <p className="mt-2 text-sm leading-6 text-mist">{item.text}</p>
               </div>
             ))}
           </div>
@@ -155,13 +160,13 @@ function SectionBlock({ section, snapshot }: { section: Section; snapshot: Store
     const quotes = snapshot.testimonials.filter((item) => item.visible).sort((a, b) => a.sort - b.sort);
     return (
       <Reveal className="mx-auto max-w-6xl px-5 py-16 md:px-8">
-        <h2 className="font-serif text-4xl">{section.title}</h2>
-        {section.subtitle ? <p className="mt-3 text-muted">{section.subtitle}</p> : null}
+        <h2 className="gold-text font-serif text-4xl font-bold">{section.title}</h2>
+        {section.subtitle ? <p className="mt-3 font-serif italic text-muted">{section.subtitle}</p> : null}
         <div className="mt-8 grid gap-6 md:grid-cols-2">
           {quotes.map((quote) => (
-            <blockquote key={quote.id} className="border border-line bg-white p-6">
-              <p className="font-serif text-2xl leading-snug">“{quote.quote}”</p>
-              <footer className="mt-4 text-xs uppercase tracking-[0.14em] text-muted">
+            <blockquote key={quote.id} className="crown-frame bg-white p-8 text-navy">
+              <p className="font-serif text-2xl italic leading-snug">“{quote.quote}”</p>
+              <footer className="label mt-4 text-[9.5px] text-brass">
                 {quote.author} · {quote.detail}
               </footer>
             </blockquote>
@@ -173,13 +178,13 @@ function SectionBlock({ section, snapshot }: { section: Section; snapshot: Store
 
   if (section.type === "promo") {
     return (
-      <Reveal className="relative mx-auto my-8 min-h-[420px] max-w-6xl overflow-hidden bg-ink">
+      <Reveal className="relative mx-auto my-8 min-h-[420px] max-w-6xl overflow-hidden bg-navy-deep">
         <Image src={section.imageUrl} alt={section.imageAlt || section.title} fill className="object-cover opacity-70" sizes="100vw" />
         <div className="relative z-10 flex min-h-[420px] flex-col justify-end p-8 text-white md:p-14">
           <p className="eyebrow text-brass-soft">{section.eyebrow}</p>
-          <h2 className="mt-3 max-w-lg font-serif text-5xl">{section.title}</h2>
+          <h2 className="gold-text-light mt-3 max-w-lg font-serif text-5xl font-bold">{section.title}</h2>
           {section.body ? <p className="mt-3 max-w-md text-white/85">{section.body}</p> : null}
-          <Link href={section.buttonHref} className="btn-ink mt-6 w-fit bg-paper text-ink" data-track={section.buttonLabel} data-track-id={`promo-${section.id}`}>
+          <Link href={section.buttonHref} className="btn-brass mt-6 w-fit" data-track={section.buttonLabel} data-track-id={`promo-${section.id}`}>
             {section.buttonLabel}
           </Link>
         </div>
@@ -190,8 +195,8 @@ function SectionBlock({ section, snapshot }: { section: Section; snapshot: Store
   if (section.type === "gallery") {
     return (
       <Reveal className="mx-auto max-w-6xl px-5 py-16 md:px-8">
-        <h2 className="font-serif text-4xl">{section.title}</h2>
-        {section.subtitle ? <p className="mt-3 text-muted">{section.subtitle}</p> : null}
+        <h2 className="gold-text font-serif text-4xl font-bold">{section.title}</h2>
+        {section.subtitle ? <p className="mt-3 font-serif italic text-muted">{section.subtitle}</p> : null}
         <div className="mt-8 grid grid-cols-2 gap-3 md:grid-cols-4">
           {section.images.map((image) => (
             <div key={image.url} className="relative aspect-[3/4] bg-sand">
@@ -205,11 +210,11 @@ function SectionBlock({ section, snapshot }: { section: Section; snapshot: Store
 
   if (section.type === "newsletter") {
     return (
-      <Reveal className="bg-ink py-16 text-paper">
+      <Reveal className="navy-ground on-navy border-y-2 border-gold py-16">
         <div className="mx-auto grid max-w-6xl gap-8 px-5 md:grid-cols-2 md:px-8">
           <div>
-            <h2 className="font-serif text-4xl md:text-5xl">{section.title}</h2>
-            <p className="mt-4 max-w-md text-white/75">{section.subtitle}</p>
+            <h2 className="gold-text font-serif text-4xl font-bold md:text-5xl">{section.title}</h2>
+            <p className="mt-4 max-w-md font-serif italic text-mist">{section.subtitle}</p>
           </div>
           <SubscribeForm source="home" buttonLabel={section.buttonLabel} dark />
         </div>
@@ -221,12 +226,12 @@ function SectionBlock({ section, snapshot }: { section: Section; snapshot: Store
     const faqs = snapshot.faqs.filter((faq) => faq.visible).sort((a, b) => a.sort - b.sort);
     return (
       <Reveal className="mx-auto max-w-3xl px-5 py-16 md:px-8">
-        <h2 className="font-serif text-5xl">{section.title}</h2>
+        <h2 className="gold-text font-serif text-5xl font-bold">{section.title}</h2>
         {section.subtitle ? <p className="mt-3 text-muted">{section.subtitle}</p> : null}
         <div className="mt-8 divide-y divide-line border-y border-line">
           {faqs.map((faq) => (
             <details key={faq.id} className="group py-4">
-              <summary className="cursor-pointer list-none font-serif text-2xl">{faq.question}</summary>
+              <summary className="cursor-pointer list-none font-serif text-2xl text-navy group-open:text-brass">{faq.question}</summary>
               <p className="mt-3 text-sm leading-7 text-muted">{faq.answer}</p>
             </details>
           ))}
@@ -239,7 +244,7 @@ function SectionBlock({ section, snapshot }: { section: Section; snapshot: Store
     return (
       <Reveal className="mx-auto grid max-w-6xl gap-12 px-5 py-16 md:grid-cols-2 md:px-8">
         <div>
-          <h1 className="font-serif text-5xl md:text-6xl">{section.title}</h1>
+          <h1 className="gold-text font-serif text-5xl font-bold md:text-6xl">{section.title}</h1>
           <p className="mt-4 max-w-md text-muted">{section.subtitle}</p>
           <dl className="mt-8 space-y-3 text-sm">
             <div>
@@ -269,7 +274,7 @@ function SectionBlock({ section, snapshot }: { section: Section; snapshot: Store
 
   return (
     <Reveal className="mx-auto max-w-3xl px-5 py-16 md:px-8">
-      <h1 className="font-serif text-5xl md:text-6xl">{section.title}</h1>
+      <h1 className="gold-text font-serif text-5xl font-bold md:text-6xl">{section.title}</h1>
       <div className="prose-house mt-6 text-base leading-8 text-ink/80">
         {paragraphs(section.body).map((paragraph) => (
           <p key={paragraph.slice(0, 32)}>{paragraph}</p>

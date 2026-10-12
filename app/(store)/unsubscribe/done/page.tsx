@@ -8,7 +8,7 @@ export default async function UnsubscribedPage({ searchParams }: { searchParams:
         : "That link is not on the list.";
   return (
     <div className="mx-auto max-w-lg px-5 py-20">
-      <h1 className="font-serif text-5xl">The list</h1>
+      <h1 className="gold-text font-serif text-5xl font-bold">The list</h1>
       <p className="mt-4 leading-7">{copy}</p>
     </div>
   );

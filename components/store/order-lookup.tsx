@@ -45,7 +45,7 @@ export function OrderLookup({ currency }: { currency: string }) {
   return (
     <div className="mx-auto max-w-3xl px-5 py-16">
       <p className="eyebrow">Your orders</p>
-      <h1 className="mt-2 font-serif text-5xl">Where the cloth is</h1>
+      <h1 className="mt-2 gold-text font-serif text-5xl font-bold">Where the cloth is</h1>
       <p className="mt-4 text-sm leading-6 text-muted">Use the order number from WhatsApp and the phone you gave with the order. Staff notes stay in the house book.</p>
       <form action={onSubmit} className="mt-8 grid gap-3 sm:grid-cols-[1fr_1fr_auto]">
         <input name="number" required placeholder="CHL-1001" className="field" />

@@ -2,15 +2,25 @@
 
 @theme inline {
   --font-sans: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
-  --font-serif: var(--font-cormorant), "Times New Roman", serif;
-  --color-ivory: #f3eee7;
-  --color-paper: #faf7f3;
-  --color-ink: #1c1916;
-  --color-muted: #6e675f;
-  --color-line: #e4dcd2;
-  --color-brass: #8d6b3e;
-  --color-brass-soft: #c4a574;
-  --color-sand: #e9e1d6;
+  --font-serif: "TeX Gyre Pagella", "Palatino Linotype", Palatino, "Book Antiqua", var(--font-cormorant), serif;
+  --font-label: "TeX Gyre Heros", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  /* Crown brand tokens */
+  --color-navy: #172b4d;
+  --color-navy-deep: #101f38;
+  --color-gold: #c6a41f;
+  --color-gold-bright: #fbcd2d;
+  --color-gold-hi: #ebd57a;
+  --color-gold-strap: #e6c558;
+  --color-mist: #afc0d8;
+  --color-ivory: #f3eee2;
+  --color-paper: #faf7f0;
+  --color-ink: #172b4d;
+  --color-muted: #5f6878;
+  --color-line: #e3dac6;
+  /* gold dark enough to read as small text on ivory */
+  --color-brass: #8f7412;
+  --color-brass-soft: #e6c558;
+  --color-sand: #ece5d4;
   --color-danger: #8d3b32;
   --color-ok: #2f5d45;
 }
@@ -20,13 +30,14 @@ html {
 }
 
 body {
-  background: var(--color-paper);
+  background: radial-gradient(115% 75% at 50% 4%, #fffefa, #faf7f0 46%, #f3eee2) fixed, var(--color-paper);
   color: var(--color-ink);
   font-family: var(--font-sans);
 }
 
 ::selection {
-  background: #e7d7be;
+  background: #ebd57a;
+  color: #172b4d;
 }
 
 :focus-visible {
@@ -35,10 +46,70 @@ body {
 }
 
 .eyebrow {
+  font-family: var(--font-label);
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  font-size: 0.68rem;
+  color: var(--color-brass);
+}
+
+/* Crown: headline filled with a gold gradient */
+.gold-text {
+  background: linear-gradient(180deg, #b8951a 0%, #8f7412 55%, #6f5a0c 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.on-navy .gold-text,
+.gold-text-light {
+  background: linear-gradient(180deg, #fbe7a0 0%, #ebd57a 40%, #c6a41f 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Crown: short gold rule under the wordmark / above headlines */
+.crown-rule {
+  display: block;
+  width: 3.5rem;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-gold), transparent);
+}
+
+.navy-ground {
+  background: radial-gradient(122% 68% at 50% 40%, #2c4878, #1b3157 38%, #101f38 74%, #0a1425);
+  color: #fbf8f1;
+}
+
+.navy-ground .eyebrow {
+  color: var(--color-gold-strap);
+}
+
+.ivory-ground {
+  background: radial-gradient(115% 75% at 50% 4%, #fffefa, #faf7f0 46%, #f3eee2);
+}
+
+/* Crown: 2px border with a 1px gold hairline just inside */
+.crown-frame {
+  position: relative;
+  border: 2px solid currentColor;
+}
+
+.crown-frame::after {
+  content: "";
+  position: absolute;
+  inset: 7px;
+  border: 1px solid var(--color-gold);
+  pointer-events: none;
+}
+
+.label {
+  font-family: var(--font-label);
+  font-weight: 700;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  font-size: 0.72rem;
-  color: var(--color-brass);
 }
 
 .field {
@@ -63,9 +134,11 @@ body {
   gap: 0.55rem;
   min-height: 3rem;
   padding: 0 1.35rem;
-  letter-spacing: 0.16em;
+  font-family: var(--font-label);
+  font-weight: 700;
+  letter-spacing: 0.24em;
   text-transform: uppercase;
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
@@ -75,7 +148,7 @@ body {
 }
 
 .btn-ink:hover {
-  background: #000;
+  background: var(--color-navy-deep);
 }
 
 .btn-line {
@@ -89,8 +162,12 @@ body {
 }
 
 .btn-brass {
-  background: var(--color-brass);
-  color: white;
+  background: linear-gradient(180deg, #f0d46a, #d8ae28 55%, #b98f16);
+  color: var(--color-navy);
+}
+
+.btn-brass:hover {
+  background: linear-gradient(180deg, #f5dc7c, #e0b832 55%, #c49a1c);
 }
 
 .prose-house p + p {
@@ -121,7 +198,7 @@ body {
 }
 
 .admin-table tr:hover td {
-  background: #fcfbf9;
+  background: #fdfbf5;
 }
 
 .marquee-track {

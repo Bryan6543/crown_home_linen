@@ -71,10 +71,11 @@ export function ProductPurchase({ product, currency }: { product: Product; curre
         </div>
       </div>
       <div>
-        <p className="eyebrow">CrownHomeLinen</p>
-        <h1 className="mt-2 font-serif text-5xl leading-none">{product.title}</h1>
-        <p className="mt-4 text-lg">
-          {price.compare ? <span className="mr-3 text-muted line-through">{formatMoney(price.compare, currency)}</span> : null}
+        <p className="eyebrow">Crown</p>
+        <span className="crown-rule mt-3" aria-hidden />
+        <h1 className="mt-2 gold-text font-serif text-5xl font-bold leading-tight">{product.title}</h1>
+        <p className="mt-4 font-serif text-2xl font-bold text-brass">
+          {price.compare ? <span className="mr-3 font-normal text-muted line-through">{formatMoney(price.compare, currency)}</span> : null}
           {formatMoney(price.price, currency)}
         </p>
         <p className="mt-4 max-w-md text-sm leading-7 text-muted">{product.shortDescription}</p>
@@ -86,7 +87,7 @@ export function ProductPurchase({ product, currency }: { product: Product; curre
                 {option.values.map((value) => {
                   const on = selected[option.name] === value;
                   return (
-                    <button key={value} type="button" onClick={() => choose(option.name, value)} className={`min-h-10 border px-4 text-sm ${on ? "border-ink bg-ink text-paper" : "border-line"}`}>
+                    <button key={value} type="button" onClick={() => choose(option.name, value)} className={`min-h-10 border px-4 text-sm ${on ? "border-navy bg-navy text-paper shadow-[inset_0_-2px_0_var(--color-gold)]" : "border-line"}`}>
                       {value}
                     </button>
                   );
@@ -174,7 +175,7 @@ export function ShopBrowser({
 
   return (
     <div className="mx-auto max-w-6xl px-5 py-12 md:px-8">
-      <h1 className="font-serif text-5xl md:text-6xl">{heading}</h1>
+      <h1 className="gold-text font-serif text-5xl font-bold md:text-6xl">{heading}</h1>
       {intro ? <p className="mt-4 max-w-2xl text-muted">{intro}</p> : null}
       <div className="mt-8 flex flex-col gap-3 border-y border-line py-4 md:flex-row md:items-center md:justify-between">
         <div className="flex flex-wrap gap-2">

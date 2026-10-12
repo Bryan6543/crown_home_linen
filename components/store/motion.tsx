@@ -59,7 +59,7 @@ export function HeroCarousel({ banners }: { banners: Banner[] }) {
   const banner = slides[index];
 
   return (
-    <section ref={root} className="relative min-h-[78vh] bg-ink text-paper" aria-roledescription="carousel">
+    <section ref={root} className="relative min-h-[78vh] bg-navy-deep text-paper" aria-roledescription="carousel">
       {slides.map((slide, slideIndex) => (
         <Image
           key={slide.id}
@@ -71,20 +71,21 @@ export function HeroCarousel({ banners }: { banners: Banner[] }) {
           sizes="100vw"
         />
       ))}
-      <div className="absolute inset-0 bg-gradient-to-r from-ink/70 via-ink/35 to-ink/10" />
+      <div className="absolute inset-0 bg-gradient-to-r from-navy-deep/85 via-navy/45 to-navy/5" />
       <div className="relative z-10 mx-auto flex min-h-[78vh] max-w-6xl flex-col justify-end px-5 pb-16 pt-28 md:px-8">
-        <p className="eyebrow text-brass-soft">{banner.eyebrow}</p>
-        <h1 className="mt-3 max-w-3xl font-serif text-5xl leading-[0.95] text-white md:text-7xl">{banner.title}</h1>
-        <p className="mt-5 max-w-xl text-base leading-7 text-white/85 md:text-lg">{banner.subtitle}</p>
+        <span className="crown-rule mb-4" aria-hidden />
+        <p className="eyebrow text-gold-strap">{banner.eyebrow}</p>
+        <h1 className="mt-3 max-w-3xl gold-text-light font-serif text-5xl font-bold leading-[1.05] md:text-7xl">{banner.title}</h1>
+        <p className="mt-5 max-w-xl font-serif text-lg italic leading-7 text-[#fbf8f1]/90 md:text-xl">{banner.subtitle}</p>
         <div className="mt-8 flex items-center gap-4">
-          <Link href={banner.buttonHref} data-track={banner.buttonLabel} data-track-id={`hero-${banner.id}`} className="btn-ink bg-paper text-ink hover:bg-white">
+          <Link href={banner.buttonHref} data-track={banner.buttonLabel} data-track-id={`hero-${banner.id}`} className="btn-brass">
             {banner.buttonLabel}
           </Link>
           <div className="ml-auto flex items-center gap-2">
             <button
               type="button"
               aria-label="Previous slide"
-              className="grid h-10 w-10 place-items-center border border-white/40 text-white"
+              className="grid h-10 w-10 place-items-center border border-gold/60 text-gold-hi hover:bg-gold/15"
               onClick={() => setIndex((current) => (current - 1 + slides.length) % slides.length)}
             >
               <ChevronLeft size={18} />
@@ -92,7 +93,7 @@ export function HeroCarousel({ banners }: { banners: Banner[] }) {
             <button
               type="button"
               aria-label="Next slide"
-              className="grid h-10 w-10 place-items-center border border-white/40 text-white"
+              className="grid h-10 w-10 place-items-center border border-gold/60 text-gold-hi hover:bg-gold/15"
               onClick={() => setIndex((current) => (current + 1) % slides.length)}
             >
               <ChevronRight size={18} />

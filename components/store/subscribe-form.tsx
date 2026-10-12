@@ -27,13 +27,13 @@ export function SubscribeForm({ source, buttonLabel = "Join the list", dark = fa
   return (
     <form action={onSubmit} className="space-y-3">
       <input name="company" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />
-      <input name="name" placeholder="Name" className={`field ${dark ? "border-white/20 bg-transparent text-paper placeholder:text-white/50" : ""}`} />
-      <input name="email" type="email" required placeholder="Email" className={`field ${dark ? "border-white/20 bg-transparent text-paper placeholder:text-white/50" : ""}`} />
-      <button type="submit" disabled={pending} data-track="Join the list" data-track-id={`subscribe-${source}`} className={dark ? "btn-ink w-full bg-paper text-ink" : "btn-ink w-full"}>
+      <input name="name" placeholder="Name" className={`field ${dark ? "border-gold/40 bg-transparent text-paper placeholder:text-white/50" : ""}`} />
+      <input name="email" type="email" required placeholder="Email" className={`field ${dark ? "border-gold/40 bg-transparent text-paper placeholder:text-white/50" : ""}`} />
+      <button type="submit" disabled={pending} data-track="Join the list" data-track-id={`subscribe-${source}`} className={dark ? "btn-brass w-full" : "btn-ink w-full"}>
         {pending ? "Saving" : buttonLabel}
       </button>
       {message ? <p className="text-sm">{message}</p> : null}
-      <p className={`text-xs leading-5 ${dark ? "text-white/60" : "text-muted"}`}>One letter at a time. You can leave the list from any letter, without writing to us.</p>
+      <p className={`text-xs leading-5 ${dark ? "text-mist" : "text-muted"}`}>One letter at a time. You can leave the list from any letter, without writing to us.</p>
     </form>
   );
 }

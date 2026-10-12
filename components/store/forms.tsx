@@ -74,7 +74,7 @@ export function CartView() {
   return (
     <div className="mx-auto grid max-w-6xl gap-12 px-5 py-14 md:px-8 lg:grid-cols-[1.1fr_0.9fr]">
       <div>
-        <h1 className="font-serif text-5xl">Bag</h1>
+        <h1 className="gold-text font-serif text-5xl font-bold">Bag</h1>
         {cart.lines.length === 0 ? (
           <p className="mt-6 text-muted">Nothing folded in here yet.</p>
         ) : (
