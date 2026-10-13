@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, CheckCircle2, MessageCircle, ShoppingBag, Trash2 } from "lucide-react";
 import { useCart } from "@/components/store/cart";
@@ -384,7 +384,27 @@ export function CartView() {
   );
 }
 
+// A returning customer's details, kept only in their own browser.
+const CUSTOMER_KEY = "crown-customer";
+const REMEMBERED = ["name", "phone", "address", "city", "email"] as const;
+
 export function CheckoutForm({ onPlaced }: { onPlaced: (order: { number: string; url: string; opened: boolean }) => void }) {
+  const form = useRef<HTMLFormElement>(null);
+
+  // Fill the fields from last time (only empty ones, so nothing typed is lost).
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(CUSTOMER_KEY) || "null") as Record<string, string> | null;
+      if (!saved || !form.current) return;
+      for (const name of REMEMBERED) {
+        const field = form.current.elements.namedItem(name) as HTMLInputElement | null;
+        if (field && !field.value && saved[name]) field.value = saved[name];
+      }
+    } catch {
+      // Storage blocked or unreadable: start with an empty form.
+    }
+  }, []);
+
   const cart = useCart();
   const [errors, setErrors] = useState<FieldErrors>({});
   const [unavailable, setUnavailable] = useState("");
@@ -419,13 +439,19 @@ export function CheckoutForm({ onPlaced }: { onPlaced: (order: { number: string;
       setErrors({ [data.field || "form"]: data.error || "The order did not save. Try again." });
       return;
     }
+    try {
+      if (formData.get("remember")) localStorage.setItem(CUSTOMER_KEY, JSON.stringify(Object.fromEntries(REMEMBERED.map((name) => [name, String(formData.get(name) || "")]))));
+      else localStorage.removeItem(CUSTOMER_KEY);
+    } catch {
+      // Storage blocked: nothing is remembered.
+    }
     const opened = sendTab(tab, data.whatsappUrl);
     cart.clear();
     onPlaced({ number: data.orderNumber, url: data.whatsappUrl, opened });
   }
 
   return (
-    <form onSubmit={(event) => { event.preventDefault(); void onSubmit(new FormData(event.currentTarget)); }} className="border border-line bg-white p-6 md:p-8">
+    <form ref={form} onSubmit={(event) => { event.preventDefault(); void onSubmit(new FormData(event.currentTarget)); }} className="border border-line bg-white p-6 md:p-8">
       <Honeypot />
       <h2 className="font-serif text-2xl font-bold text-navy">Send your order</h2>
       <p className="mt-1 text-sm leading-6 text-muted">No payment here. We confirm the total on WhatsApp first.</p>
@@ -440,6 +466,10 @@ export function CheckoutForm({ onPlaced }: { onPlaced: (order: { number: string;
           <Field label="Email" name="email" type="email" optional autoComplete="email" maxLength={120} error={errors.email} />
         </div>
         <Field label="Note" name="notes" textarea rows={3} optional maxLength={500} placeholder="Colours you would like, delivery time, collect from the shop…" />
+        <label className="flex items-start gap-2.5 text-sm text-muted">
+          <input type="checkbox" name="remember" defaultChecked className="mt-1 accent-[var(--color-navy)]" />
+          Remember my details on this device for next time
+        </label>
       </div>
       <dl className="tabular mt-6 space-y-2 border-t border-line pt-5 text-sm">
         <div className="flex justify-between">
