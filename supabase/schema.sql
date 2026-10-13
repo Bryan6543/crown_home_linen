@@ -325,13 +325,29 @@ as $$
   select (doc - 'staffNotes' - 'clientToken')
   from public.orders
   where lower(doc->>'number') = lower(order_number)
-    and regexp_replace(coalesce(doc->>'phone', ''), '\D', '', 'g') = phone_digits
+    and length(phone_digits) >= 9
+    and right(regexp_replace(coalesce(doc->>'phone', ''), '\D', '', 'g'), 9) = right(phone_digits, 9)
   limit 1;
 $$;
 
 grant execute on function public.subscribe_address(text, text, text) to anon, authenticated;
 grant execute on function public.unsubscribe_token(text) to anon, authenticated;
 grant execute on function public.lookup_order(text, text) to anon, authenticated;
+
+-- Order numbers for signed-out customers (see migrations/2026-10-13-order-numbers.sql).
+create sequence if not exists public.order_number_seq start with 1101;
+
+create or replace function public.next_order_number()
+returns text
+language sql
+security definer
+set search_path = public
+as $$
+  select 'CHL-' || nextval('public.order_number_seq')::text;
+$$;
+
+grant execute on function public.next_order_number() to anon, authenticated;
+
 create policy campaigns_staff on public.campaigns for all to authenticated using (public.is_staff()) with check (public.is_staff());
 create policy deliveries_staff on public.deliveries for all to authenticated using (public.is_staff()) with check (public.is_staff());
 create policy templates_staff on public.templates for all to authenticated using (public.is_staff()) with check (public.is_staff());

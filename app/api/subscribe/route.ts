@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { fillTemplate, letterHtml, sendEmail } from "@/lib/mail";
-import { getSnapshot, subscribeEmail } from "@/lib/repo";
+import { defaultTemplates } from "@/lib/migrate";
+import { getStorefront, subscribeEmail } from "@/lib/repo";
 
 const schema = z.object({
   email: z.string().trim().email().max(160),
@@ -20,8 +21,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ result, message: "That address is already on the list." });
   }
 
-  const snapshot = await getSnapshot();
-  const template = snapshot.templates.find((item) => item.id === (result === "resubscribed" ? "welcome_back" : "welcome"));
+  const snapshot = await getStorefront();
+  // Visitors cannot read the templates table, so the built-in letter stands in.
+  const templateId = result === "resubscribed" ? "welcome_back" : "welcome";
+  const template = [...snapshot.templates, ...defaultTemplates()].find((item) => item.id === templateId);
   const origin = process.env.NEXT_PUBLIC_SITE_URL || new URL(request.url).origin;
   const unsubscribeUrl = `${origin}/unsubscribe?token=${subscriber.token}`;
   const vars = {

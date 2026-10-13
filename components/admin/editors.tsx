@@ -9,7 +9,7 @@ import {
   deleteNavAction,
   deleteSectionAction,
   deleteTestimonialAction,
-  importSeedAction,
+  restoreCatalogAction,
   saveBannerAction,
   saveCategoryAction,
   saveFaqAction,
@@ -86,6 +86,11 @@ export function SettingsForm({
         />
         Show the announcement
       </label>
+      <p className="-mt-2 text-xs leading-5 text-muted">
+        A thin bar above the header, for occasional news (new stock, a holiday
+        closing). Visitors can close it; changing the wording shows it to them
+        again.
+      </p>
 
       <label className="block text-sm">
         Company logo
@@ -97,7 +102,10 @@ export function SettingsForm({
               className="h-12 w-auto max-w-[160px] object-contain border border-line bg-white p-1"
             />
           ) : (
-            <span className="text-xs text-muted">No logo set</span>
+            <span className="text-xs text-muted">
+              No logo set: the header shows the Crown mark with CROWN set
+              beneath it (recommended)
+            </span>
           )}
           <label className="btn-line cursor-pointer">
             Upload logo
@@ -128,6 +136,11 @@ export function SettingsForm({
             </button>
           ) : null}
         </div>
+        <span className="mt-2 block text-xs leading-5 text-muted">
+          An uploaded logo replaces the mark and wordmark in the header. Use a
+          tightly cropped, transparent PNG; a logo with empty space around it
+          will look tiny.
+        </span>
         <p className="mt-1 text-xs text-muted">
           Recommended: transparent PNG or SVG, roughly 200–400 px wide. Saved
           with the rest of the settings.
@@ -220,18 +233,20 @@ export function SettingsForm({
         type="button"
         className="btn-line ml-3"
         onClick={() => {
-          if (
-            !confirm(
-              "Replace the book with the sample catalog, including sample orders?",
-            )
-          )
-            return;
-          void importSeedAction().then(() =>
-            setMessage("Sample catalog loaded."),
+          const typed = prompt(
+            mode === "supabase"
+              ? "This puts Crown's products, collections, homepage, pages, menus, and questions back to the version in the code, and removes anything added since. Orders, inquiries, customers, and the letter list are not touched.\n\nType RESTORE to continue."
+              : "This replaces the local book with the starting catalogue and its sample orders.\n\nType RESTORE to continue.",
+          );
+          if (typed?.trim().toUpperCase() !== "RESTORE") return;
+          setMessage("Restoring…");
+          void restoreCatalogAction().then(
+            () => setMessage("Crown catalogue restored."),
+            () => setMessage("The restore did not finish. Nothing else was changed."),
           );
         }}
       >
-        Reload the sample catalog
+        Restore Crown catalogue
       </button>
       {message ? <p className="text-sm">{message}</p> : null}
     </div>
@@ -1124,7 +1139,7 @@ export function SectionManager({
               <option value="right">Image right</option>
             </select>
           ) : null}
-          {section.type === "values" ? (
+          {"items" in section ? (
             <div className="space-y-2">
               {section.items.map((item, itemIndex) => (
                 <div
@@ -1283,6 +1298,11 @@ export function SectionManager({
             "promo",
             "contact",
             "gallery",
+            "highlights",
+            "steps",
+            "size_guide",
+            "visit",
+            "wholesale",
           ].map((item) => (
             <option key={item} value={item}>
               {item}
@@ -1387,7 +1407,7 @@ export function OrderDesk({
           checked={showNote}
           onChange={(event) => setShowNote(event.target.checked)}
         />{" "}
-        Show that note on the customer's order page
+        Show that note on the customer&apos;s order page
       </label>
       <label className="flex items-center gap-2 text-sm">
         <input

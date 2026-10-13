@@ -1,12 +1,12 @@
 import type { OrderStatus } from "@/lib/types";
 
 export const ORDER_FLOW: { id: OrderStatus; label: string; detail: string }[] = [
-  { id: "new", label: "Received", detail: "The house has the order and has not opened it yet." },
-  { id: "accepted", label: "Accepted", detail: "We have accepted the order and will confirm the details." },
-  { id: "confirmed", label: "Confirmed", detail: "The cloth, the total, and the address are agreed." },
-  { id: "packed", label: "Packed", detail: "It is folded and waiting for the courier." },
-  { id: "shipped", label: "On the way", detail: "It has left the cupboard." },
-  { id: "fulfilled", label: "Delivered", detail: "The order is complete." },
+  { id: "new", label: "Received", detail: "Crown has your order and will reply on WhatsApp." },
+  { id: "accepted", label: "Accepted", detail: "We have accepted the order and are checking stock." },
+  { id: "confirmed", label: "Confirmed", detail: "Items, total, and delivery are agreed." },
+  { id: "packed", label: "Packed", detail: "Packed and ready for delivery or collection." },
+  { id: "shipped", label: "On the way", detail: "With the courier, on its way to you." },
+  { id: "fulfilled", label: "Delivered", detail: "Delivered or collected. Thank you." },
 ];
 
 export function statusLabel(status: OrderStatus) {

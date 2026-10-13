@@ -1,27 +1,27 @@
 import type { Activity, EmailTemplate, Settings, StoreSnapshot } from "@/lib/types";
 
 const mailDefaults = {
-  emailFrom: "CrownHomeLinen <hello@crownhomelinen.com>",
+  emailFrom: "Crown <hello@crownhomelinen.com>",
   popupEnabled: true,
-  popupTitle: "A note, occasionally",
-  popupBody: "New cloth and the occasional house letter. Leave an email, and leave whenever you like.",
-  sceneEnabled: true,
+  popupTitle: "New stock, now and then",
+  popupBody: "New stock and the occasional note from Crown. Leave an email, and leave whenever you like.",
+  sceneEnabled: false,
   sceneAssetUrl: "",
   sceneYaw: 0,
-  sceneCaption: "The stack turns as you move down the page.",
+  sceneCaption: "",
 };
 
 export const defaultTemplates = (): EmailTemplate[] => [
   {
     id: "welcome",
     name: "Welcome",
-    subject: "You are on the CrownHomeLinen list",
-    body: "{{name}},\n\nYou asked for the occasional note from {{store_name}}. We write when a cloth is worth writing about, and not to fill a week.\n\nIf this was not you, or you change your mind, you can leave the list yourself:\n{{unsubscribe_url}}",
+    subject: "You are on the {{store_name}} list",
+    body: "{{name}},\n\nYou asked for the occasional note from {{store_name}}. We write when new stock or colours arrive, and not to fill a week.\n\nIf this was not you, or you change your mind, you can leave the list yourself:\n{{unsubscribe_url}}",
   },
   {
     id: "welcome_back",
     name: "Welcome back",
-    subject: "You are back on the CrownHomeLinen list",
+    subject: "You are back on the {{store_name}} list",
     body: "{{name}},\n\nYou are subscribed again. We will not send the letters you missed. The next one, when there is one, will come to this address.\n\nLeave again any time:\n{{unsubscribe_url}}",
   },
   {

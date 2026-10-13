@@ -15,7 +15,7 @@ import {
   deleteSection,
   deleteTestimonial,
   getSnapshot,
-  importSeed,
+  restoreCatalog,
   recordDelivery,
   saveBanner,
   saveCampaign,
@@ -248,9 +248,9 @@ export async function updateCustomerAction(id: string, notes: string) {
   return { ok: true as const };
 }
 
-export async function importSeedAction() {
+export async function restoreCatalogAction() {
   await gate();
-  await importSeed();
+  await restoreCatalog();
   refresh();
   return { ok: true as const };
 }

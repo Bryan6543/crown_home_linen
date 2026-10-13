@@ -2,6 +2,7 @@ import "server-only";
 
 import { mkdir, readFile, writeFile } from "fs/promises";
 import path from "path";
+import { cache } from "react";
 import { connection } from "next/server";
 import { blankActivity, migrateSnapshot } from "@/lib/migrate";
 import { statusLabel } from "@/lib/order-status";
@@ -119,6 +120,22 @@ async function deleteRow(table: string, id: string) {
   if (error) throw new Error(error.message);
 }
 
+// A visitor cannot read the order book, so the next number comes from the
+// database sequence (supabase/schema.sql). A database without it falls back to
+// a dated number, which the unique index checks on insert.
+async function reserveOrderNumber(attempt: number) {
+  if (attempt === 0) {
+    const supabase = await createClient();
+    const { data, error } = await supabase.rpc("next_order_number");
+    if (!error && typeof data === "string" && data) return data;
+  }
+  const now = new Date();
+  const stamp = [now.getUTCFullYear() % 100, now.getUTCMonth() + 1, now.getUTCDate()].map((part) => String(part).padStart(2, "0")).join("");
+  return `CHL-${stamp}-${Math.floor(1000 + Math.random() * 9000)}`;
+}
+
+export class DuplicateOrderError extends Error {}
+
 function nextNumber(orders: Order[]) {
   const max = orders.reduce((highest, order) => {
     const value = Number(order.number.replace(/\D/g, ""));
@@ -127,7 +144,9 @@ function nextNumber(orders: Order[]) {
   return `CHL-${max + 1}`;
 }
 
-export async function getSnapshot(): Promise<StoreSnapshot> {
+// Everything, including orders, customers, and visits. For the house book.
+// Row-level security returns nothing private to a signed-out visitor anyway.
+export const getSnapshot = cache(async (): Promise<StoreSnapshot> => {
   await connection();
   if (!isSupabaseConfigured()) return readFileStore();
   const [settingsRows, categories, products, banners, pages, sections, testimonials, faqs, navigation, orders, inquiries, customers, events, subscribers, campaigns, deliveries, templates] =
@@ -170,7 +189,38 @@ export async function getSnapshot(): Promise<StoreSnapshot> {
     deliveries,
     templates,
   });
-}
+});
+
+// The public catalogue and page copy only. The shop renders from this, so a
+// page view never pulls the order book or the visit log over the wire.
+export const getStorefront = cache(async (): Promise<StoreSnapshot> => {
+  await connection();
+  const privateParts = { orders: [], inquiries: [], customers: [], events: [], subscribers: [], campaigns: [], deliveries: [], templates: [] };
+  if (!isSupabaseConfigured()) return { ...(await readFileStore()), ...privateParts };
+  const [settingsRows, categories, products, banners, pages, sections, testimonials, faqs, navigation] = await Promise.all([
+    docs<Settings>("settings"),
+    docs<Category>("categories"),
+    docs<Product>("products"),
+    docs<Banner>("banners"),
+    docs<CmsPage>("pages"),
+    docs<Section>("sections"),
+    docs<Testimonial>("testimonials"),
+    docs<Faq>("faqs"),
+    docs<NavItem>("navigation"),
+  ]);
+  return migrateSnapshot({
+    settings: settingsRows[0] || createSeed().settings,
+    categories,
+    products,
+    banners,
+    pages,
+    sections,
+    testimonials,
+    faqs,
+    navigation,
+    ...privateParts,
+  });
+});
 
 export async function saveSettings(settings: Settings) {
   if (!isSupabaseConfigured()) {
@@ -408,25 +458,29 @@ export async function createOrder(input: Omit<Order, "id" | "number" | "createdA
       return order;
     });
   }
-  const snapshot = await getSnapshot();
-  const existing = snapshot.orders.find((order) => order.clientToken === input.clientToken);
-  if (existing) return existing;
-  const order: Order = {
-    ...input,
-    id: crypto.randomUUID(),
-    number: nextNumber(snapshot.orders),
-    activities: [blankActivity("Order received.", "house", true)],
-    createdAt: now,
-    updatedAt: now,
-  };
-  await insertDoc("orders", {
-    id: order.id,
-    number: order.number,
-    status: order.status,
-    client_token: order.clientToken,
-    doc: order,
-  });
-  return order;
+  const supabase = await createClient();
+  for (let attempt = 0; attempt < 4; attempt += 1) {
+    const order: Order = {
+      ...input,
+      id: crypto.randomUUID(),
+      number: await reserveOrderNumber(attempt),
+      activities: [blankActivity("Order received.", "house", true)],
+      createdAt: now,
+      updatedAt: now,
+    };
+    const { error } = await supabase.from("orders").insert({
+      id: order.id,
+      number: order.number,
+      status: order.status,
+      client_token: order.clientToken,
+      doc: order,
+    });
+    if (!error) return order;
+    if (error.code !== "23505") throw new Error(error.message);
+    // The same bag sent twice (a double tap) collides on client_token.
+    if (/client_token/i.test(`${error.message} ${error.details ?? ""}`)) throw new DuplicateOrderError("This order was already received.");
+  }
+  throw new Error("Could not number the order. Try again.");
 }
 
 export async function updateOrder(id: string, patch: { status?: Order["status"]; staffNotes?: string; publicNote?: string; activity?: string; author?: string; activityVisible?: boolean }) {
@@ -476,16 +530,16 @@ export async function createInquiry(input: Omit<Inquiry, "id" | "createdAt" | "u
       return inquiry;
     });
   }
-  const snapshot = await getSnapshot();
-  const existing = snapshot.inquiries.find((inquiry) => inquiry.clientToken === input.clientToken);
-  if (existing) return existing;
   const inquiry: Inquiry = { ...input, id: crypto.randomUUID(), status: "new", staffNotes: "", activities: [], createdAt: now, updatedAt: now };
-  await insertDoc("inquiries", {
+  const supabase = await createClient();
+  const { error } = await supabase.from("inquiries").insert({
     id: inquiry.id,
     status: inquiry.status,
     client_token: inquiry.clientToken,
     doc: inquiry,
   });
+  // 23505 on client_token: the same note sent twice. The first one is kept.
+  if (error && error.code !== "23505") throw new Error(error.message);
   return inquiry;
 }
 
@@ -557,7 +611,19 @@ export async function recordEvents(events: Omit<AnalyticsEvent, "id" | "createdA
   );
 }
 
-export async function importSeed() {
+async function pruneRows(table: string, keep: string[]) {
+  const supabase = await createClient();
+  const list = `(${keep.map((id) => `"${id.replace(/"/g, "")}"`).join(",")})`;
+  const { error } = await supabase.from(table).delete().not("id", "in", list);
+  if (error) throw new Error(error.message);
+}
+
+// Puts Crown's catalogue, page copy, menus, and questions back exactly as they
+// are in lib/seed.ts. On the live database it never touches orders,
+// inquiries, customers, subscribers, letters, or visits, and it keeps the
+// uploaded logo and analytics ID. The local file store gets the whole seed,
+// sample orders included, so the house book has something to show.
+export async function restoreCatalog() {
   const seed = createSeed();
   if (!isSupabaseConfigured()) {
     await locked(async () => {
@@ -565,7 +631,15 @@ export async function importSeed() {
     });
     return;
   }
-  await upsertDoc("settings", { id: "1", doc: seed.settings });
+  const current = await getStorefront();
+  await upsertDoc("settings", {
+    id: "1",
+    doc: {
+      ...seed.settings,
+      logoUrl: current.settings.logoUrl || seed.settings.logoUrl,
+      gaMeasurementId: current.settings.gaMeasurementId || seed.settings.gaMeasurementId,
+    },
+  });
   for (const category of seed.categories) await saveCategory(category);
   for (const item of seed.products) await saveProduct(item);
   for (const item of seed.banners) await saveBanner(item);
@@ -574,28 +648,13 @@ export async function importSeed() {
   for (const item of seed.testimonials) await saveTestimonial(item);
   for (const item of seed.faqs) await saveFaq(item);
   await saveNavigation(seed.navigation);
-  for (const order of seed.orders) {
-    await upsertDoc("orders", { id: order.id, number: order.number, status: order.status, doc: order });
-  }
-  for (const inquiry of seed.inquiries) {
-    await upsertDoc("inquiries", { id: inquiry.id, status: inquiry.status, doc: inquiry });
-  }
-  for (const customer of seed.customers) {
-    await upsertDoc("customers", { id: customer.id, doc: customer });
-  }
-  for (const subscriber of seed.subscribers) await upsertDoc("subscribers", { id: subscriber.id, email: subscriber.email, status: subscriber.status, doc: subscriber });
-  for (const campaign of seed.campaigns) await upsertDoc("campaigns", { id: campaign.id, status: campaign.status, doc: campaign });
-  for (const template of seed.templates) await upsertDoc("templates", { id: template.id, doc: template });
-  const supabase = await createClient();
-  await supabase.from("analytics_events").upsert(
-    seed.events.map((event) => ({
-      id: event.id,
-      type: event.type,
-      path: event.path,
-      created_at: event.createdAt,
-      doc: event,
-    })),
-  );
+  await pruneRows("products", seed.products.map((item) => item.id));
+  await pruneRows("categories", seed.categories.map((item) => item.id));
+  await pruneRows("banners", seed.banners.map((item) => item.id));
+  await pruneRows("sections", seed.sections.map((item) => item.id));
+  await pruneRows("testimonials", seed.testimonials.map((item) => item.id).concat("none"));
+  await pruneRows("faqs", seed.faqs.map((item) => item.id));
+  await pruneRows("navigation", seed.navigation.map((item) => item.id));
 }
 
 export function storageMode() {
@@ -736,6 +795,7 @@ export async function findOrderForCustomer(number: string, phone: string) {
   const snapshot = await getSnapshot();
   const wanted = number.trim().toLowerCase();
   const digits = digitsOnly(phone);
-  const order = snapshot.orders.find((item) => item.number.toLowerCase() === wanted && digitsOnly(item.phone) === digits);
+  // Compare the last nine digits, so 077 123 4567 matches +94 77 123 4567.
+  const order = snapshot.orders.find((item) => item.number.toLowerCase() === wanted && digitsOnly(item.phone).slice(-9) === digits.slice(-9));
   return order || null;
 }

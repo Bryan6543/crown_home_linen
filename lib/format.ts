@@ -1,10 +1,24 @@
 import type { Order, OrderItem, Settings } from "@/lib/types";
 
-export function formatMoney(cents: number, currency = "USD") {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency,
-  }).format(cents / 100);
+const moneyFormats = new Map<string, Intl.NumberFormat>();
+
+// Prices are stored in cents. Whole amounts drop the ".00": LKR 1,250, not LKR 1,250.00.
+export function formatMoney(cents: number, currency = "LKR") {
+  const whole = cents % 100 === 0;
+  const key = `${currency}:${whole}`;
+  let format = moneyFormats.get(key);
+  if (!format) {
+    format = new Intl.NumberFormat(currency === "LKR" ? "en-LK" : "en-US", {
+      style: "currency",
+      currency,
+      currencyDisplay: "code",
+      minimumFractionDigits: whole ? 0 : 2,
+      maximumFractionDigits: 2,
+    });
+    moneyFormats.set(key, format);
+  }
+  // A non-breaking space keeps "LKR" and the amount on one line.
+  return format.format(cents / 100).replace(/\s/, "\u00a0");
 }
 
 export function digitsOnly(value: string) {
@@ -30,7 +44,7 @@ export function orderMessage(order: Pick<Order, "number" | "customerName" | "pho
     "",
     order.customerName,
     order.phone,
-    order.email,
+    ...(order.email ? [order.email] : []),
     [order.address, order.city].filter(Boolean).join(", "),
     "",
     ...order.items.map((item) => lineFor(item, settings.currency)),
@@ -46,13 +60,13 @@ function lineFor(item: OrderItem, currency: string) {
   return `${item.quantity} × ${item.title}${variant} — ${formatMoney(item.unitPrice * item.quantity, currency)}`;
 }
 
-export function inquiryMessage(input: { storeName: string; name: string; phone: string; email: string; message: string; productTitle?: string }) {
+export function inquiryMessage(input: { storeName: string; name: string; phone: string; email: string; message: string; productTitle?: string; wholesale?: boolean }) {
   const lines = [
-    `${input.storeName} inquiry`,
+    `${input.storeName} ${input.wholesale ? "wholesale quote request" : "inquiry"}`,
     "",
     input.name,
     input.phone,
-    input.email,
+    ...(input.email ? [input.email] : []),
   ];
   if (input.productTitle) lines.push("", `About: ${input.productTitle}`);
   lines.push("", input.message);

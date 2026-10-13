@@ -2,12 +2,13 @@ import Link from "next/link";
 
 export default function NotFound() {
   return (
-    <div className="mx-auto flex min-h-[60vh] max-w-xl flex-col items-start justify-center px-6 py-20">
-      <p className="eyebrow">404</p>
-      <h1 className="mt-3 gold-text font-serif text-5xl font-bold">This page is not on the rail.</h1>
-      <p className="mt-4 text-muted">The cloth may have moved. The shop is still open.</p>
+    <div className="mx-auto flex min-h-[70vh] max-w-xl flex-col items-start justify-center px-6 py-20">
+      <span className="crown-rule mb-4" aria-hidden />
+      <p className="eyebrow">Page not found</p>
+      <h1 className="gold-text mt-3 font-serif text-5xl font-bold">This page is not here</h1>
+      <p className="mt-4 text-muted">The link may be old. Crown&apos;s bedsheets, towels, pillows, and duvets are all in the shop.</p>
       <Link href="/shop" className="btn-ink mt-8">
-        Shop the house
+        Go to the shop
       </Link>
     </div>
   );

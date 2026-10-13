@@ -35,7 +35,7 @@ export default async function DashboardPage() {
         <section>
           <h2 className="font-serif text-3xl">Recent orders</h2>
           <ul className="mt-4 space-y-2 text-sm">
-            {snapshot.orders.slice(0, 5).map((order) => (
+            {[...snapshot.orders].sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, 5).map((order) => (
               <li key={order.id}>
                 <Link href={`/admin/orders/${order.id}`}>{order.number}</Link> · {order.customerName} · {formatMoney(order.subtotal, snapshot.settings.currency)} · {formatWhen(order.createdAt)}
               </li>
@@ -45,7 +45,7 @@ export default async function DashboardPage() {
         <section>
           <h2 className="font-serif text-3xl">Recent inquiries</h2>
           <ul className="mt-4 space-y-2 text-sm">
-            {snapshot.inquiries.slice(0, 5).map((inquiry) => (
+            {[...snapshot.inquiries].sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, 5).map((inquiry) => (
               <li key={inquiry.id}>
                 <Link href={`/admin/inquiries/${inquiry.id}`}>{inquiry.name}</Link> · {inquiry.type} · {inquiry.status}
               </li>

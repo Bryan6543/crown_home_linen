@@ -1,10 +1,12 @@
-import type { Metadata } from "next";
 import { PageSections } from "@/components/store/sections";
-import { getSnapshot } from "@/lib/repo";
+import { pageMetadata } from "@/lib/page-meta";
+import { getStorefront } from "@/lib/repo";
 
-export const metadata: Metadata = { title: "Questions" };
+export function generateMetadata() {
+  return pageMetadata("faq", "/faq", "Questions");
+}
 
-export default async function FaqPage() {
-  const snapshot = await getSnapshot();
+export default async function Page() {
+  const snapshot = await getStorefront();
   return <PageSections snapshot={snapshot} slug="faq" />;
 }

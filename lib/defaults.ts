@@ -66,5 +66,40 @@ export function blankSection(type: Section["type"], pageSlug: string, sort: numb
       return { ...base, type, title: "Write to the house", subtitle: "Orders and questions both come through here." };
     case "gallery":
       return { ...base, type, title: "Inside the house", subtitle: "", images: [] };
+    case "highlights":
+      return {
+        ...base,
+        type,
+        title: "Why Crown",
+        items: [
+          { title: "25 years", text: "In the textile trade in Colombo 11." },
+          { title: "Retail and wholesale", text: "One piece or a hotel's worth." },
+        ],
+      };
+    case "steps":
+      return {
+        ...base,
+        type,
+        title: "How ordering works",
+        subtitle: "",
+        items: [
+          { title: "Choose", text: "Add sizes and colours to the bag." },
+          { title: "Send", text: "The order opens in WhatsApp." },
+          { title: "Confirm", text: "We confirm the total before you pay." },
+        ],
+      };
+    case "size_guide":
+      return { ...base, type, title: "Find your size", subtitle: "Sizes are in inches." };
+    case "visit":
+      return { ...base, type, title: "Visit the shop", subtitle: "" };
+    case "wholesale":
+      return {
+        ...base,
+        type,
+        eyebrow: "Wholesale",
+        title: "Buying for a hotel or shop?",
+        body: "Send the list and we will reply with a quote.",
+        items: [{ title: "Bulk prices", text: "Quoted on WhatsApp." }],
+      };
   }
 }

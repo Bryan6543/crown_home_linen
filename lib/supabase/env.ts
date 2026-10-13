@@ -1,4 +1,8 @@
+// CROWN_STORAGE=file forces the local data/store.json even when Supabase keys
+// are present, so the shop can be tried out (orders, forms, the house book)
+// without writing to the live database. `npm run dev:file` sets it.
 export function isSupabaseConfigured() {
+  if (process.env.CROWN_STORAGE === "file") return false;
   return Boolean(
     process.env.NEXT_PUBLIC_SUPABASE_URL &&
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,

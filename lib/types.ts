@@ -4,7 +4,7 @@ export type SubscriberStatus = "active" | "unsubscribed";
 export type CampaignStatus = "draft" | "sending" | "sent";
 export type DeliveryStatus = "sent" | "failed" | "skipped";
 export type InquiryStatus = "new" | "in_progress" | "resolved";
-export type InquiryType = "contact" | "product" | "newsletter" | "order";
+export type InquiryType = "contact" | "product" | "newsletter" | "order" | "wholesale";
 export type EventType =
   | "page_view"
   | "button_click"
@@ -146,6 +146,16 @@ export type Section =
       buttonHref: string;
     })
   | (SectionBase & { type: "contact"; title: string; subtitle: string })
+  // A row of short facts under the hero.
+  | (SectionBase & { type: "highlights"; title: string; items: { title: string; text: string }[] })
+  // Numbered steps, e.g. how a WhatsApp order works.
+  | (SectionBase & { type: "steps"; title: string; subtitle: string; items: { title: string; text: string }[] })
+  // Bed sheet, duvet, and protector sizes, built from the catalogue.
+  | (SectionBase & { type: "size_guide"; title: string; subtitle: string })
+  // Shop address, phone, hours, and directions, from the settings.
+  | (SectionBase & { type: "visit"; title: string; subtitle: string })
+  // Hotel, guest-house, and shop buyers: a short pitch and a quote form.
+  | (SectionBase & { type: "wholesale"; eyebrow: string; title: string; body: string; items: { title: string; text: string }[] })
   | (SectionBase & {
       type: "gallery";
       title: string;

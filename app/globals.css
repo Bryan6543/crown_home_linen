@@ -2,24 +2,25 @@
 
 @theme inline {
   --font-sans: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
-  --font-serif: "TeX Gyre Pagella", "Palatino Linotype", Palatino, "Book Antiqua", var(--font-cormorant), serif;
-  --font-label: "TeX Gyre Heros", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-serif: "TeX Gyre Pagella", "Palatino Linotype", Palatino, "Book Antiqua", var(--font-fallback-serif), serif;
+  --font-label: "TeX Gyre Heros", "Helvetica Neue", Helvetica, Arial, var(--font-outfit), sans-serif;
   /* Crown brand tokens */
-  --color-navy: #172b4d;
-  --color-navy-deep: #101f38;
-  --color-gold: #c6a41f;
+  --color-navy: #1a2b5f;
+  --color-navy-deep: #0f1a3d;
+  --color-gold: #d4af37;
   --color-gold-bright: #fbcd2d;
-  --color-gold-hi: #ebd57a;
-  --color-gold-strap: #e6c558;
-  --color-mist: #afc0d8;
-  --color-ivory: #f3eee2;
+  --color-gold-hi: #f4de94;
+  --color-gold-strap: #ebcb6b;
+  --color-mist: #b8c4e2;
+  --color-ivory: #f4efe4;
   --color-paper: #faf7f0;
-  --color-ink: #172b4d;
-  --color-muted: #5f6878;
-  --color-line: #e3dac6;
-  /* gold dark enough to read as small text on ivory */
-  --color-brass: #8f7412;
-  --color-brass-soft: #e6c558;
+  --color-ink: #1a2b5f;
+  --color-muted: #5a6280;
+  --color-line: #e6dcc6;
+  /* The accent for small text on cream: a sapphire, not a darkened gold
+     (dark gold reads olive next to navy). 7.6:1 on ivory. */
+  --color-brass: #2f4a9c;
+  --color-brass-soft: #ebcb6b;
   --color-sand: #ece5d4;
   --color-danger: #8d3b32;
   --color-ok: #2f5d45;
@@ -30,14 +31,14 @@ html {
 }
 
 body {
-  background: radial-gradient(115% 75% at 50% 4%, #fffefa, #faf7f0 46%, #f3eee2) fixed, var(--color-paper);
+  background: var(--color-paper);
   color: var(--color-ink);
   font-family: var(--font-sans);
 }
 
 ::selection {
-  background: #ebd57a;
-  color: #172b4d;
+  background: #f4de94;
+  color: #1a2b5f;
 }
 
 :focus-visible {
@@ -45,197 +46,634 @@ body {
   outline-offset: 3px;
 }
 
-.eyebrow {
-  font-family: var(--font-label);
-  font-weight: 700;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  font-size: 0.68rem;
-  color: var(--color-brass);
-}
+/* Component classes sit in the components layer, so Tailwind utilities
+   (px-4, pl-10, min-h-10, ...) on the same element still win. */
+@layer components {
+  .eyebrow {
+    font-family: var(--font-label);
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    font-size: 0.68rem;
+    color: var(--color-brass);
+  }
 
-/* Crown: headline filled with a gold gradient */
-.gold-text {
-  background: linear-gradient(180deg, #b8951a 0%, #8f7412 55%, #6f5a0c 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
+  .eyebrow::before {
+    content: "";
+    display: inline-block;
+    width: 1.1rem;
+    height: 1px;
+    margin-right: 0.7rem;
+    vertical-align: 0.3em;
+    background: var(--color-gold);
+  }
 
-.on-navy .gold-text,
-.gold-text-light {
-  background: linear-gradient(180deg, #fbe7a0 0%, #ebd57a 40%, #c6a41f 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
+  /* Under a gold rule the dash would repeat it. */
+  .crown-rule + .eyebrow::before,
+  .crown-rule + * > .eyebrow::before {
+    display: none;
+  }
 
-/* Crown: short gold rule under the wordmark / above headlines */
-.crown-rule {
-  display: block;
-  width: 3.5rem;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--color-gold), transparent);
-}
+  /* Crown: headline filled with a gold gradient */
+  .gold-text {
+    /* Headings on cream are navy; the gold arrives as the sheen. */
+    background-image: linear-gradient(105deg, transparent 42%, rgba(222, 182, 72, 0.9) 50%, transparent 58%), linear-gradient(180deg, #2c4389 0%, #1a2b5f 55%, #121f4a 100%);
+    background-size: 250% 100%, 100% 100%;
+    background-repeat: no-repeat;
+    background-position: 0% 0, 0 0;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
 
-.navy-ground {
-  background: radial-gradient(122% 68% at 50% 40%, #2c4878, #1b3157 38%, #101f38 74%, #0a1425);
-  color: #fbf8f1;
-}
+  .on-navy .gold-text,
+  .gold-text-light {
+    background-image: linear-gradient(105deg, transparent 43%, rgba(255, 255, 255, 0.9) 50%, transparent 57%), linear-gradient(180deg, #fff1bf 0%, #f6d97a 38%, #e3b23c 100%);
+    background-size: 250% 100%, 100% 100%;
+    background-repeat: no-repeat;
+    background-position: 0% 0, 0 0;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
 
-.navy-ground .eyebrow {
-  color: var(--color-gold-strap);
-}
+  /* Crown: short gold rule under the wordmark / above headlines */
+  .crown-rule {
+    display: block;
+    width: 3.5rem;
+    height: 1px;
+    background: linear-gradient(90deg, var(--color-gold), rgba(212, 175, 55, 0.15));
+  }
 
-.ivory-ground {
-  background: radial-gradient(115% 75% at 50% 4%, #fffefa, #faf7f0 46%, #f3eee2);
-}
+  .navy-ground {
+    background: radial-gradient(122% 70% at 50% 38%, #29448e, #1d316f 38%, #13204a 72%, #0b132e);
+    color: #fbf8f1;
+  }
 
-/* Crown: 2px border with a 1px gold hairline just inside */
-.crown-frame {
-  position: relative;
-  border: 2px solid currentColor;
-}
+  .navy-ground .eyebrow {
+    color: var(--color-gold-strap);
+  }
 
-.crown-frame::after {
-  content: "";
-  position: absolute;
-  inset: 7px;
-  border: 1px solid var(--color-gold);
-  pointer-events: none;
-}
+  .ivory-ground {
+    background: radial-gradient(115% 75% at 50% 4%, #fffefa, #faf7f0 46%, #f3eee2);
+  }
 
-.label {
-  font-family: var(--font-label);
-  font-weight: 700;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-}
+  /* Crown: 2px border with a 1px gold hairline just inside */
+  .crown-frame {
+    position: relative;
+    border: 2px solid currentColor;
+  }
 
-.field {
-  width: 100%;
-  border: 1px solid var(--color-line);
-  background: white;
-  padding: 0.85rem 0.9rem;
-  font-size: 0.95rem;
-  outline: none;
-}
+  .crown-frame::after {
+    content: "";
+    position: absolute;
+    inset: 7px;
+    border: 1px solid var(--color-gold);
+    pointer-events: none;
+  }
 
-.field:focus {
-  border-color: var(--color-ink);
-}
+  .label {
+    font-family: var(--font-label);
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+  }
 
-.btn-ink,
-.btn-line,
-.btn-brass {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.55rem;
-  min-height: 3rem;
-  padding: 0 1.35rem;
-  font-family: var(--font-label);
-  font-weight: 700;
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
-  font-size: 0.68rem;
-  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
-}
+  .field {
+    width: 100%;
+    border: 1px solid var(--color-line);
+    background: white;
+    padding: 0.85rem 0.9rem;
+    font-size: 0.95rem;
+    outline: none;
+  }
 
-.btn-ink {
-  background: var(--color-ink);
-  color: var(--color-paper);
-}
+  .field:focus {
+    border-color: var(--color-ink);
+  }
 
-.btn-ink:hover {
-  background: var(--color-navy-deep);
-}
+  .btn-ink,
+  .btn-line,
+  .btn-brass {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    min-height: 3rem;
+    padding: 0 1.35rem;
+    font-family: var(--font-label);
+    font-weight: 700;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    font-size: 0.68rem;
+    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  }
 
-.btn-line {
-  border: 1px solid var(--color-ink);
-  background: transparent;
-}
+  .btn-ink {
+    background: var(--color-ink);
+    color: var(--color-paper);
+  }
 
-.btn-line:hover {
-  background: var(--color-ink);
-  color: var(--color-paper);
-}
+  .btn-ink:hover {
+    background: var(--color-navy-deep);
+  }
 
-.btn-brass {
-  background: linear-gradient(180deg, #f0d46a, #d8ae28 55%, #b98f16);
-  color: var(--color-navy);
-}
+  .btn-line {
+    border: 1px solid var(--color-ink);
+    background: transparent;
+  }
 
-.btn-brass:hover {
-  background: linear-gradient(180deg, #f5dc7c, #e0b832 55%, #c49a1c);
-}
+  .btn-line:hover {
+    background: var(--color-ink);
+    color: var(--color-paper);
+  }
 
-.prose-house p + p {
-  margin-top: 1rem;
-}
+  .btn-brass {
+    background: linear-gradient(180deg, #fbe08a, #f0c64a 52%, #d9a92e);
+    color: var(--color-navy);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), 0 6px 18px -10px rgba(15, 26, 61, 0.55);
+  }
 
-.admin-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.92rem;
-}
+  .btn-brass:hover {
+    background: linear-gradient(180deg, #fde69c, #f4cf5c 52%, #e0b23a);
+  }
 
-.admin-table th {
-  text-align: left;
-  font-size: 0.68rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--color-muted);
-  font-weight: 500;
-  padding: 0.75rem 0.8rem;
-  border-bottom: 1px solid var(--color-line);
-}
+  .prose-house p + p {
+    margin-top: 1rem;
+  }
 
-.admin-table td {
-  padding: 0.85rem 0.8rem;
-  border-bottom: 1px solid var(--color-line);
-  vertical-align: middle;
-}
+  .admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+  }
 
-.admin-table tr:hover td {
-  background: #fdfbf5;
-}
+  .admin-table th {
+    text-align: left;
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+    font-weight: 500;
+    padding: 0.75rem 0.8rem;
+    border-bottom: 1px solid var(--color-line);
+  }
 
-.marquee-track {
-  display: flex;
-  gap: 3rem;
-  width: max-content;
-  animation: marquee 36s linear infinite;
-}
+  .admin-table td {
+    padding: 0.85rem 0.8rem;
+    border-bottom: 1px solid var(--color-line);
+    vertical-align: middle;
+  }
 
-@keyframes marquee {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
-}
+  .admin-table tr:hover td {
+    background: #fdfbf5;
+  }
 
-.house-loader {
-  width: 72px;
-  height: 2px;
-  background: var(--color-line);
-  position: relative;
-  overflow: hidden;
-}
+  /* Sections fade up once as they enter the viewport (components/store/motion.tsx). */
+  /* Only hidden when scripts run, so the page reads fine if they do not. */
+  @media (scripting: enabled) {
+    .reveal {
+      opacity: 0;
+      transform: translateY(22px);
+      transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+  }
 
-.house-loader::after {
-  content: "";
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: 40%;
-  background: var(--color-ink);
-  animation: loadbar 1s ease-in-out infinite;
-}
+  .reveal.is-in {
+    opacity: 1;
+    transform: none;
+  }
 
-@keyframes loadbar {
-  0% { transform: translateX(-120%); }
-  100% { transform: translateX(280%); }
+  .page-fade {
+    animation: page-fade 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  @keyframes page-fade {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  .rise-in {
+    animation: page-fade 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .drawer-in {
+    animation: drawer-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  @keyframes drawer-in {
+    from { transform: translateX(100%); }
+    to { transform: none; }
+  }
+
+  .fade-in {
+    animation: fade-in 0.25s ease both;
+  }
+
+  .menu-in {
+    animation: menu-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  @keyframes menu-in {
+    from { transform: translateX(-100%); }
+    to { transform: none; }
+  }
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* A thin gold rule with a small diamond in the middle, for section breaks. */
+  .crown-divider {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--color-gold);
+  }
+
+  .crown-divider::before,
+  .crown-divider::after {
+    content: "";
+    height: 1px;
+    flex: 1;
+    background: linear-gradient(90deg, transparent, currentColor);
+  }
+
+  .crown-divider::after {
+    background: linear-gradient(90deg, currentColor, transparent);
+  }
+
+  /* Tabular numbers line up in price and size tables. */
+  .tabular {
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .field-label {
+    display: block;
+    font-family: var(--font-label);
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-size: 0.64rem;
+    color: var(--color-muted);
+    margin-bottom: 0.4rem;
+  }
+
+  .field[aria-invalid="true"] {
+    border-color: var(--color-danger);
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 2.5rem;
+    padding: 0 1rem;
+    border: 1px solid var(--color-line);
+    background: white;
+    font-family: var(--font-label);
+    font-weight: 700;
+    font-size: 0.64rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-navy);
+    transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .chip:hover {
+    border-color: var(--color-gold);
+  }
+
+  .chip[aria-pressed="true"],
+  .chip[aria-checked="true"] {
+    background: var(--color-navy);
+    border-color: var(--color-navy);
+    color: var(--color-paper);
+    box-shadow: inset 0 -2px 0 var(--color-gold);
+  }
+
+  .chip:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .marquee-track {
+    display: flex;
+    gap: 3rem;
+    width: max-content;
+    animation: marquee 36s linear infinite;
+  }
+
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  .house-loader {
+    width: 72px;
+    height: 2px;
+    background: var(--color-line);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .house-loader::after {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 40%;
+    background: var(--color-ink);
+    animation: loadbar 1s ease-in-out infinite;
+  }
+
+  @keyframes loadbar {
+    0% { transform: translateX(-120%); }
+    100% { transform: translateX(280%); }
+  }
+
+  /* ------------------------------------------------------------------
+     Motion. One easing for everything (a long, soft settle), short
+     travel, nothing loops. All of it is switched off for visitors who
+     ask for reduced motion (bottom of this file).
+     ------------------------------------------------------------------ */
+
+  /* Children of .stagger appear one after another once their Reveal
+     section scrolls in; .stagger-load does the same as soon as it mounts. */
+  .stagger > :nth-child(2), .stagger-load > :nth-child(2) { --i: 1; }
+  .stagger > :nth-child(3), .stagger-load > :nth-child(3) { --i: 2; }
+  .stagger > :nth-child(4), .stagger-load > :nth-child(4) { --i: 3; }
+  .stagger > :nth-child(5), .stagger-load > :nth-child(5) { --i: 4; }
+  .stagger > :nth-child(6), .stagger-load > :nth-child(6) { --i: 5; }
+  .stagger > :nth-child(7), .stagger-load > :nth-child(7) { --i: 6; }
+  .stagger > :nth-child(8), .stagger-load > :nth-child(8) { --i: 7; }
+  .stagger > :nth-child(9), .stagger-load > :nth-child(9) { --i: 8; }
+  .stagger > :nth-child(10), .stagger-load > :nth-child(10) { --i: 9; }
+  .stagger > :nth-child(11), .stagger-load > :nth-child(11) { --i: 10; }
+  .stagger > :nth-child(n + 12), .stagger-load > :nth-child(n + 12) { --i: 11; }
+
+  @media (scripting: enabled) {
+    .stagger > * {
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1), transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+      transition-delay: calc(var(--i, 0) * 75ms + 120ms);
+    }
+
+    .is-in .stagger > *,
+    .stagger.is-in > * {
+      opacity: 1;
+      transform: none;
+    }
+
+    /* Gold rules draw across when their section arrives. */
+    .reveal .crown-rule {
+      transform: scaleX(0);
+      transform-origin: left center;
+      transition: transform 1.2s cubic-bezier(0.22, 1, 0.36, 1) 0.1s;
+    }
+
+    .reveal .crown-rule.mx-auto {
+      transform-origin: center;
+    }
+
+    .reveal.is-in .crown-rule {
+      transform: none;
+    }
+
+    /* A line that draws left to right (the steps connector). */
+    .reveal .draw-x {
+      transform: scaleX(0);
+      transform-origin: left center;
+      transition: transform 1.6s cubic-bezier(0.22, 1, 0.36, 1) 0.35s;
+    }
+
+    .reveal.is-in .draw-x {
+      transform: none;
+    }
+
+    /* Framed photographs unveil top to bottom and settle from a slight zoom. */
+    .reveal .unveil {
+      clip-path: inset(0 0 100% 0);
+      transition: clip-path 1.3s cubic-bezier(0.65, 0, 0.35, 1) 0.1s;
+    }
+
+    .reveal .unveil img {
+      transform: scale(1.12);
+      transition: transform 2.4s cubic-bezier(0.22, 1, 0.36, 1) 0.1s;
+    }
+
+    .reveal.is-in .unveil {
+      clip-path: inset(0);
+    }
+
+    .reveal.is-in .unveil img {
+      transform: none;
+    }
+
+    /* A slow light sweep across gold headings, once. */
+    .reveal.is-in .gold-text,
+    .reveal.is-in .gold-text-light {
+      animation: sheen 2.2s cubic-bezier(0.45, 0, 0.25, 1) 0.45s 1 both;
+    }
+  }
+
+  .stagger-load > * {
+    animation: rise 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: calc(var(--i, 0) * 60ms);
+  }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  @keyframes sheen {
+    from { background-position: 0% 0, 0 0; }
+    to { background-position: 100% 0, 0 0; }
+  }
+
+  /* Hero: each line of the opener rises in turn (--d sets the order). */
+  .hero-step {
+    animation: rise 1s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: calc(var(--d, 0) * 120ms + 120ms);
+  }
+
+  /* Headline words slide up from behind a mask. The padding keeps the
+     descenders of g, y, and p clear of the mask. */
+  .word-mask {
+    display: inline-block;
+    overflow: hidden;
+    padding-bottom: 0.14em;
+    margin-bottom: -0.14em;
+    vertical-align: top;
+  }
+
+  .word-up {
+    display: inline-block;
+    animation: word-up 1.05s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: calc(var(--w, 0) * 70ms + 220ms);
+  }
+
+  @keyframes word-up {
+    from { transform: translateY(108%); }
+    to { transform: none; }
+  }
+
+  /* One band of light crossing the headline: each word picks it up a beat
+     after the word before (--w comes from the word's wrapper). */
+  .hero-sheen {
+    background-image: linear-gradient(105deg, transparent 43%, rgba(255, 250, 232, 0.6) 50%, transparent 57%), linear-gradient(180deg, #fff1bf 0%, #f6d97a 38%, #e3b23c 100%);
+    animation: sheen 1.1s linear 1 both;
+    animation-delay: calc(1.35s + var(--w, 0) * 0.16s);
+  }
+
+  .hero-rule {
+    transform-origin: left center;
+    animation: draw 1.3s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both;
+  }
+
+  @keyframes draw {
+    from { transform: scaleX(0); }
+    to { transform: none; }
+  }
+
+  /* The hero photograph: unveiled once on arrival, then held. */
+  .hero-unveil {
+    animation: unveil 1.5s cubic-bezier(0.65, 0, 0.35, 1) 0.35s both;
+  }
+
+  .hero-unveil img {
+    animation: settle 2.8s cubic-bezier(0.22, 1, 0.36, 1) 0.35s both;
+  }
+
+  .hero-frame {
+    animation: fade-in 1.2s ease 0.2s both;
+  }
+
+  @keyframes unveil {
+    from { clip-path: inset(0 0 100% 0); }
+    to { clip-path: inset(0); }
+  }
+
+  @keyframes settle {
+    from { transform: scale(1.14); }
+    to { transform: none; }
+  }
+
+  /* Photographs drift a few pixels against the page while it scrolls, where
+     the browser supports scroll-linked animation. Pure CSS, no listeners. */
+  @supports (animation-timeline: view()) {
+    .parallax {
+      animation: parallax linear both;
+      animation-timeline: view();
+      animation-range: cover;
+    }
+  }
+
+  @keyframes parallax {
+    from { transform: translateY(-3.5%) scale(1.08); }
+    to { transform: translateY(3.5%) scale(1.08); }
+  }
+
+  /* The crown catches the light once on load, and again on hover: a white
+     band masked to the crown's shape, swept linearly (per the brand notes). */
+  .crown-gleam {
+    position: relative;
+    display: inline-block;
+  }
+
+  .crown-gleam::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.95) 50%, transparent 70%);
+    background-size: 260% 100%;
+    background-repeat: no-repeat;
+    background-position: 100% 0;
+    mix-blend-mode: screen;
+    -webkit-mask: url("/images/brand/crown-mark.png") center / contain no-repeat;
+    mask: url("/images/brand/crown-mark.png") center / contain no-repeat;
+    animation: gleam 1.6s linear 0.9s 1 both;
+  }
+
+  a:hover .crown-gleam::after,
+  a:focus-visible .crown-gleam::after {
+    animation: gleam 1.3s linear 0s 1 both;
+  }
+
+  @keyframes gleam {
+    from { background-position: 100% 0; }
+    to { background-position: 0% 0; }
+  }
+
+  /* Arrow icons step forward when their link or button is hovered. */
+  .lucide-arrow-right {
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  a:hover > .lucide-arrow-right,
+  button:hover > .lucide-arrow-right,
+  a:hover .lucide-arrow-right {
+    transform: translateX(4px);
+  }
+
+  /* Gold buttons: a light sweep on hover. */
+  .btn-brass {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .btn-brass::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(100deg, transparent 35%, rgba(255, 255, 255, 0.55) 50%, transparent 65%);
+    transform: translateX(-110%);
+    transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .btn-brass:hover::after {
+    transform: translateX(110%);
+  }
+
+  /* The bag count gives a small bump when it changes. */
+  .bump {
+    animation: bump 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+
+  @keyframes bump {
+    from { transform: scale(0.6); }
+    60% { transform: scale(1.25); }
+    to { transform: none; }
+  }
+
 }
 
 @media (prefers-reduced-motion: reduce) {
   .marquee-track { animation: none; }
   html { scroll-behavior: auto; }
+  .reveal { opacity: 1; transform: none; transition: none; }
+  .page-fade, .rise-in, .drawer-in, .fade-in, .menu-in { animation: none; }
+  .stagger > *, .stagger-load > *, .hero-step, .word-up, .hero-rule, .hero-unveil, .hero-unveil img, .hero-frame, .reveal .crown-rule, .reveal .draw-x, .reveal .unveil, .reveal .unveil img, .parallax, .bump {
+    animation: none !important;
+    transition: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    clip-path: none !important;
+  }
+  .gold-text, .gold-text-light, .hero-sheen { animation: none !important; }
+  .crown-gleam::after, .btn-brass::after { display: none; }
 }

@@ -1,20 +1,14 @@
 "use client";
 
-import { useRef } from "react";
 import { usePathname } from "next/navigation";
-import gsap from "gsap";
-import { useGSAP } from "@gsap/react";
 
+// A short fade between pages. Keyed on the path only, so filtering the shop
+// (which changes the query string) does not replay it.
 export function PageFade({ children }: { children: React.ReactNode }) {
-  const ref = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
-  useGSAP(
-    () => {
-      if (!ref.current) return;
-      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-      gsap.fromTo(ref.current, { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.7, ease: "power3.out" });
-    },
-    { dependencies: [pathname], scope: ref },
+  return (
+    <div key={pathname} className="page-fade">
+      {children}
+    </div>
   );
-  return <div ref={ref}>{children}</div>;
 }

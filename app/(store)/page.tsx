@@ -1,7 +1,7 @@
 import { PageSections } from "@/components/store/sections";
-import { getSnapshot } from "@/lib/repo";
+import { getStorefront } from "@/lib/repo";
 
 export default async function HomePage() {
-  const snapshot = await getSnapshot();
+  const snapshot = await getStorefront();
   return <PageSections snapshot={snapshot} slug="home" />;
 }
