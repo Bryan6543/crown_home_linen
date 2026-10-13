@@ -52,26 +52,10 @@ body {
   .eyebrow {
     font-family: var(--font-label);
     font-weight: 700;
-    letter-spacing: 0.3em;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
     font-size: 0.68rem;
     color: var(--color-brass);
-  }
-
-  .eyebrow::before {
-    content: "";
-    display: inline-block;
-    width: 1.1rem;
-    height: 1px;
-    margin-right: 0.7rem;
-    vertical-align: 0.3em;
-    background: var(--color-gold);
-  }
-
-  /* Under a gold rule the dash would repeat it. */
-  .crown-rule + .eyebrow::before,
-  .crown-rule + * > .eyebrow::before {
-    display: none;
   }
 
   /* Crown: headline filled with a gold gradient */
@@ -135,7 +119,7 @@ body {
   .label {
     font-family: var(--font-label);
     font-weight: 700;
-    letter-spacing: 0.22em;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
   }
 
@@ -163,9 +147,9 @@ body {
     padding: 0 1.35rem;
     font-family: var(--font-label);
     font-weight: 700;
-    letter-spacing: 0.24em;
+    letter-spacing: 0.18em;
     text-transform: uppercase;
-    font-size: 0.68rem;
+    font-size: 0.7rem;
     transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
   }
 
